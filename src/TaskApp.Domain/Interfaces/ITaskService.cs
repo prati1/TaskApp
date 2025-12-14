@@ -1,5 +1,6 @@
 using TaskEntity = TaskApp.Domain.Entities.Task;
-namespace TaskApp.Domain.Services;
+
+namespace TaskApp.Domain.Interfaces;
 
 public interface ITaskService
 {

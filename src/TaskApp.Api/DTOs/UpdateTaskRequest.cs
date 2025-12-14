@@ -4,7 +4,7 @@ namespace TaskApp.Api.DTOs;
 
 public record UpdateTaskRequest : AddTaskRequest
 {
-    public UpdateTaskRequest(string Name, string? Description, DateTime DueDate, DateTime StartDate, Domain.Enums.Priority Priority) : base(Name, Description, DueDate, StartDate, Priority)
+    public UpdateTaskRequest(string Name, string? Description, DateTime DueDate, DateTime? StartDate, Domain.Enums.Priority Priority) : base(Name, Description, DueDate, StartDate, Priority)
     {
     }
 

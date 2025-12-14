@@ -1,7 +1,9 @@
 using Microsoft.EntityFrameworkCore;
+using TaskApp.Domain.Enums;
 using TaskApp.Domain.Interfaces;
 using TaskApp.Infrastructure.Data;
 using TaskEntity = TaskApp.Domain.Entities.Task;
+using TaskStatus = System.Threading.Tasks.TaskStatus;
 
 namespace TaskApp.Infrastructure.Repositories;
 
@@ -40,7 +42,10 @@ public class TaskRepository : ITaskRepository
 
     public async Task<int> HighPriorityTaskCountAsync(DateTime dueDate)
     {
-        throw new NotImplementedException();
+        return await _context.Tasks.CountAsync(t => 
+            t.Priority == Priority.High && 
+            t.Status != Domain.Enums.TaskStatus.Finished && 
+            t.DueDate.Date == dueDate.Date);
     }
 
     public async Task SaveChangesAsync()

@@ -49,15 +49,21 @@ public class Task
     )
     {
         Name = name;
-        Description = description;
         DueDate = dueDate;
         Priority = priority;
-        StartDate = startDate;
+        if (startDate is not null) StartDate = startDate;
+        if (description is not null) Description = description;
 
         // Set EndDate if status is changed to Finished
         if (status == Enums.TaskStatus.Finished && Status != Enums.TaskStatus.Finished)
         {
             EndDate = DateTime.UtcNow;
+        }
+
+        // Set StartDate to now if status is changes from New to InProgress and StartDate is null
+        if (startDate is null && status == Enums.TaskStatus.InProgress && Status == Enums.TaskStatus.New)
+        {
+            StartDate = DateTime.UtcNow;
         }
 
         Status = status;

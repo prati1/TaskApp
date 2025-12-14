@@ -6,26 +6,22 @@ namespace TaskApp.Domain.Services;
 public class TaskService : ITaskService
 {
   private readonly ITaskRepository _taskRepository;
+  private readonly IHolidayService _holidayService;
 
-  public TaskService(ITaskRepository taskRepository)
+  public TaskService(ITaskRepository taskRepository, IHolidayService holidayService)
   {
       _taskRepository = taskRepository;
+      _holidayService = holidayService;
   }
 
   public async Task<int> AddTaskAsync(TaskEntity task) {
-    // await _taskRepository.HighPriorityTaskCountAsync(DateTime.Now);
+    ValidatePastDueDate(task);
+    ValidateDueDateRules(task);
+    await ValidateHighPriorityTaskLimit(task);
 
-    var newTask = new TaskEntity(
-        task.Name,
-        task.Description,
-        task.StartDate,
-        task.DueDate,
-        task.Priority
-    );
-
-    await _taskRepository.AddTaskAsync(newTask);
+    await _taskRepository.AddTaskAsync(task);
     await _taskRepository.SaveChangesAsync();
-    return newTask.Id;
+    return task.Id;
   }
 
   public async Task<TaskEntity> UpdateTaskAsync(TaskEntity task) {
@@ -33,6 +29,11 @@ public class TaskService : ITaskService
       if (existingTask == null) {
           throw new KeyNotFoundException($"Task {task.Name} with ID {task.Id} not found");
       }
+
+      ValidateDueDateRules(task);
+      if (existingTask.Priority != task.Priority && task.Status != Enums.TaskStatus.Finished) {
+        await ValidateHighPriorityTaskLimit(task);
+      }   
 
       existingTask.Update(
           task.Name,
@@ -67,4 +68,44 @@ public class TaskService : ITaskService
   {
       return await _taskRepository.GetAllTasksAsync();
   }
+
+  private async Task ValidateHighPriorityTaskLimit(TaskEntity task)
+  {
+      if (task.Priority == Enums.Priority.High && task.Status != Enums.TaskStatus.Finished)
+      {
+        int highPriorityTaskCount = await _taskRepository.HighPriorityTaskCountAsync(task.DueDate);
+        if (highPriorityTaskCount >= 100)
+        {
+            throw new InvalidOperationException("Cannot add task. High priority task limit exceeded for the given due date.");
+        }
+      }
+  }
+
+  private void ValidateDueDateRules(TaskEntity task)
+  {
+    // Users might start a task only after its due date, so this validation is removed.
+    //   if (task.StartDate != null && task.StartDate.Value.Date > task.DueDate.Date)
+    //   {
+    //       throw new ArgumentException("Start date cannot be after due date.");
+    //   }
+
+      if (task.DueDate.DayOfWeek == DayOfWeek.Saturday || task.DueDate.DayOfWeek == DayOfWeek.Sunday)
+      {
+          throw new ArgumentException("Due date cannot fall on a weekend.");
+      }
+
+      if (_holidayService.IsHoliday(task.DueDate))
+      {
+          throw new ArgumentException("Due date cannot be on a holiday.");
+      }
+  }
+
+  private void ValidatePastDueDate(TaskEntity task)
+  {
+      if (task.DueDate.Date < DateTime.Now.Date)
+      {
+          throw new ArgumentException("Due date cannot be in the past.");
+      }
+  }
+
 }

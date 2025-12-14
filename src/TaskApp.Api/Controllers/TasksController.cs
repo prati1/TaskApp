@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using TaskApp.Api.DTOs;
-using TaskApp.Domain.Services;
+using TaskApp.Domain.Interfaces;
 using TaskEntity = TaskApp.Domain.Entities.Task;
 
 namespace TaskApp.Api.Controllers
@@ -39,15 +39,11 @@ namespace TaskApp.Api.Controllers
         [HttpPost]
         public async Task<ActionResult> AddTask([FromBody] AddTaskRequest task)
         {
-            if (task is null)
-            {
-                return BadRequest();
-            }
             var taskEntity = new TaskEntity(
                 task.Name,
                 task.Description,
-                task.DueDate,
                 task.StartDate,
+                task.DueDate,
                 task.Priority
             );
             await _taskService.AddTaskAsync(taskEntity);
@@ -60,8 +56,8 @@ namespace TaskApp.Api.Controllers
             var taskEntity = new TaskEntity(
                 task.Name,
                 task.Description,
-                task.DueDate,
                 task.StartDate,
+                task.DueDate,
                 task.Priority
             )
             {

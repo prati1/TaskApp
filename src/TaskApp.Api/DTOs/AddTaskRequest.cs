@@ -6,6 +6,6 @@ public record AddTaskRequest(
     string Name,
     string? Description,
     DateTime DueDate,
-    DateTime StartDate,
+    DateTime? StartDate,
     Priority Priority
 );
