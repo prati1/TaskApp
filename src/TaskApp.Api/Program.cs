@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using TaskApp.Domain.Interfaces;
+using TaskApp.Domain.Services;
 using TaskApp.Infrastructure.Data;
 using TaskApp.Infrastructure.Repositories;
 
@@ -12,11 +13,12 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-var connectionString = builder.Configuration.GetConnectionString("TasksDatabase");
+var connectionString = builder.Configuration.GetConnectionString("TaskAppDatabaseConnection");
 builder.Services.AddDbContext<TaskDbContext>(options =>
     options.UseSqlite(connectionString));
 
 builder.Services.AddScoped<ITaskRepository, TaskRepository>();
+builder.Services.AddScoped<ITaskService, TaskService>();
 
 var app = builder.Build();
 

@@ -15,7 +15,7 @@ public class Task
 
     public string? Description { get; set; }
 
-    public DateTime StartDate { get; set; } = DateTime.UtcNow;
+    public DateTime? StartDate { get; set; } = DateTime.UtcNow;
 
     public DateTime DueDate { get; set; }
     public Enums.TaskStatus Status { get; set; } = Enums.TaskStatus.New;
@@ -26,8 +26,8 @@ public class Task
 
     public Task(
         string name,
-        string description,
-        DateTime startDate,
+        string? description,
+        DateTime? startDate,
         DateTime dueDate,
         Priority priority)
     {
@@ -41,15 +41,18 @@ public class Task
 
     public void Update(
     string name,
-    string description,
+    string? description,
     DateTime dueDate,
     Priority priority,
-    Enums.TaskStatus status)
+    Enums.TaskStatus status,
+    DateTime? startDate
+    )
     {
         Name = name;
         Description = description;
         DueDate = dueDate;
         Priority = priority;
+        StartDate = startDate;
 
         // Set EndDate if status is changed to Finished
         if (status == Enums.TaskStatus.Finished && Status != Enums.TaskStatus.Finished)
