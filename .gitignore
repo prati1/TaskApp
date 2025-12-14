@@ -1,0 +1,14 @@
+# Build Folders
+bin/
+obj/
+
+# Visual Studio Code
+.vscode
+
+.DS_Store
+
+# ASP.NET temporary files
+wwwroot/
+*.vs/
+*.log
+*.db
