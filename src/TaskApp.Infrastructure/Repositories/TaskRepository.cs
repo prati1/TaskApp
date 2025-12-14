@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using TaskApp.Domain.Interfaces;
 using TaskApp.Infrastructure.Data;
 using TaskEntity = TaskApp.Domain.Entities.Task;
 
@@ -27,12 +28,12 @@ public class TaskRepository : ITaskRepository
         await _context.Tasks.AddAsync(task);
     }
 
-    public async Task UpdateTaskAsync(TaskEntity task)
+    public void UpdateTaskAsync(TaskEntity task)
     {
         _context.Tasks.Update(task);
     }
 
-    public async Task DeleteTaskAsync(TaskEntity task)
+    public void DeleteTaskAsync(TaskEntity task)
     {
         _context.Tasks.Remove(task);
     }
