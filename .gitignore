@@ -11,4 +11,3 @@ obj/
 wwwroot/
 *.vs/
 *.log
-*.db
